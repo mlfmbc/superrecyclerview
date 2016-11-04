@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import customheaderandfooter.adapter.CommonAdapter;
 
@@ -39,14 +40,19 @@ public class CustomRecyclerView extends RecyclerView {
                         && lastVisibleItem + 1 == getAdapter().getItemCount() && getAdapter().getItemCount() > 1) {
                     if(CommonAdapter!=null&&CommonAdapter.getmLoadMore()!=null)CommonAdapter.getmLoadMore().onLoadMore();
                 }
+
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if(getLayoutManager()==null)return;
-                if(getLayoutManager()instanceof LinearLayoutManager)
-                    lastVisibleItem = ((LinearLayoutManager)getLayoutManager()).findLastVisibleItemPosition();
+                if(getLayoutManager()instanceof LinearLayoutManager) {
+                    lastVisibleItem = ((LinearLayoutManager) getLayoutManager()).findLastVisibleItemPosition();
+                }
+                if (!canScrollVertically(-1)) {
+//                    Log.e("onNestedPreFling", "我滑动到了顶部");
+                }
             }
         });
     }
