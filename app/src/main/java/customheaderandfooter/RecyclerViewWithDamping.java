@@ -51,92 +51,59 @@ public class RecyclerViewWithDamping extends RecyclerView implements Runnable {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (mLastDownY == 0f && mDistance == 0) {
-                    mLastDownY = event.getY();
-                    return true;
-                }
-                break;
-
-            case MotionEvent.ACTION_CANCEL:
-                break;
-
-            case MotionEvent.ACTION_UP:
-                if (mDistance != 0) {
-                    mStep = 1;
-                    mPositive = (mDistance >= 0);
-                    this.post(this);
-                    return true;
-                }
-                mLastDownY = 0f;
-                mDistance = 0;
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                if (mLastDownY != 0f) {
-                    mDistance = (int) (mLastDownY - event.getY());
-
-                    if ((mDistance < 0 && !canScrollVertically(-1))
-                            || (mDistance > 0 && !canScrollVertically(1))) {
-                        mDistance /= 3;
-                        this.setTranslationY(-mDistance);
-                        if(Damping!=null){
-                            Damping.DampingMoving(-mDistance);
-                        }
-                        return true;
-                    }
-                }
-                mDistance = 0;
-                break;
-        }
-        return super.onInterceptTouchEvent(event);
+       boolean  sss= super.onInterceptTouchEvent(event);
+        if(TouchEvent(event))return true;
+        return sss;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (mLastDownY == 0f && mDistance == 0) {
-                    mLastDownY = event.getY();
-                    return true;
-                }
-                break;
-
-            case MotionEvent.ACTION_CANCEL:
-                break;
-
-            case MotionEvent.ACTION_UP:
-                if (mDistance != 0) {
-                    mStep = 1;
-                    mPositive = (mDistance >= 0);
-                    this.post(this);
-                    return true;
-                }
-                mLastDownY = 0f;
-                mDistance = 0;
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                if (mLastDownY != 0f) {
-                    mDistance = (int) (mLastDownY - event.getY());
-                    if ((mDistance < 0 && !canScrollVertically(-1))
-                            || (mDistance > 0 && !canScrollVertically(1))) {
-                        mDistance /= 3;
-                        this.setTranslationY(-mDistance);
-                        if(Damping!=null){
-                            Damping.DampingMoving(-mDistance);
-                        }
-                        return true;
-                    }
-                }
-                mDistance = 0;
-                break;
-        }
-        return super.onTouchEvent(event);
+        boolean  sss= super.onTouchEvent(event);
+        if(TouchEvent(event))return true;
+        return sss;
     }
 
+private boolean TouchEvent(MotionEvent event){
+    switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            if (mLastDownY == 0f && mDistance == 0) {
+                mLastDownY = event.getY();
+                return true;
+            }
+            break;
 
+        case MotionEvent.ACTION_CANCEL:
+            break;
+
+        case MotionEvent.ACTION_UP:
+            if (mDistance != 0) {
+                mStep = 1;
+                mPositive = (mDistance >= 0);
+                this.post(this);
+                return true;
+            }
+            mLastDownY = 0f;
+            mDistance = 0;
+            break;
+
+        case MotionEvent.ACTION_MOVE:
+            if (mLastDownY != 0f) {
+                mDistance = (int) (mLastDownY - event.getY());
+                if ((mDistance < 0 && !canScrollVertically(-1))
+                        || (mDistance > 0 && !canScrollVertically(1))) {
+                    mDistance /= 3;
+                    this.setTranslationY(-mDistance);
+                    if(Damping!=null){
+                        Damping.DampingMoving(-mDistance);
+                    }
+                    return true;
+                }
+            }
+            mDistance = 0;
+            break;
+    }
+    return false;
+}
     public void run() {
         if (mDistance < 0 && Math.abs(mDistance) > 50) {
             if(Damping!=null){

@@ -88,6 +88,7 @@
         android:id="@+id/cs_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
        />
 
 // app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -97,6 +98,12 @@
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
         android:layout_marginTop="200dp"/>
+    <TextView
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:textSize="20pt"
+        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n1\n"/>
     <LinearLayout
         android:id="@+id/top_title"
         android:layout_width="match_parent"

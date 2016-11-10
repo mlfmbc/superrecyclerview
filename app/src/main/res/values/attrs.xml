@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomCoordinatorLayout1_0">
+        <attr name="DeepInnerLayoutId" format="reference" />
+        <attr name="DeepTouchLayoutId" format="reference" />
+        <attr name="HeadLayoutId" format="reference" />
+        <attr name="LabelNumId" format="reference" />
+        <attr name="TopLayoutId" format="reference" />
+        <attr name="TopRightId" format="reference" />
+    </declare-styleable>
+</resources>

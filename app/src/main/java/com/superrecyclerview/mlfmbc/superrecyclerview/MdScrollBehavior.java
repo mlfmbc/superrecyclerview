@@ -26,6 +26,7 @@ public class MdScrollBehavior extends CoordinatorLayout.Behavior<View>{
     @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, View child, View target, int dx, int dy, int[] consumed) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
+        Log.e("onNestedPreScroll", "=" + dy);
         if(target instanceof RecyclerView){
             if(((LinearLayoutManager) ((RecyclerView)target).getLayoutManager()).findFirstVisibleItemPosition()==0){
                 int leftScrolled = getScollYDistance((RecyclerView) target);
@@ -37,14 +38,14 @@ public class MdScrollBehavior extends CoordinatorLayout.Behavior<View>{
 
     @Override
     public boolean onNestedPreFling(CoordinatorLayout coordinatorLayout, View child, View target, float velocityX, float velocityY) {
-        if(target instanceof RecyclerView){
-            if(((LinearLayoutManager) ((RecyclerView)target).getLayoutManager()).findFirstVisibleItemPosition()==0){
-                int leftScrolled = getScollYDistance((RecyclerView) target);
-//        Log.e("onNestedPreFling",leftScrolled+"");
-                child.setScrollY(leftScrolled/3);
-//        ((NestedScrollView) child).fling((int) velocityY);
-            }
-        }
+//        if(target instanceof RecyclerView){
+//            if(((LinearLayoutManager) ((RecyclerView)target).getLayoutManager()).findFirstVisibleItemPosition()==0){
+//                int leftScrolled = getScollYDistance((RecyclerView) target);
+////        Log.e("onNestedPreFling",leftScrolled+"");
+//                child.setScrollY(leftScrolled/3);
+////        ((NestedScrollView) child).fling((int) velocityY);
+//            }
+//        }
         return super.onNestedPreFling( coordinatorLayout,  child,  target,  velocityX,  velocityY);
     }
 

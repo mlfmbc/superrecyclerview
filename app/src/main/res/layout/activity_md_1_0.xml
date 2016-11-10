@@ -1,34 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<customheaderandfooter.CustomCoordinatorLayout1_0 xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.superrecyclerview.mlfmbc.superrecyclerview.MdActivity"
-    android:background="@color/colorAccent">
-
-    <!--<android.support.design.widget.AppBarLayout-->
-    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">-->
-
-    <!--<android.support.v7.widget.Toolbar-->
-    <!--android:id="@+id/toolbar"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="100dp"-->
-    <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"-->
-    <!--android:background="?attr/colorPrimary"-->
-    <!--app:layout_scrollFlags="scroll|enterAlways"/>-->
-
-    <!--</android.support.design.widget.AppBarLayout>-->
+    android:background="@color/colorAccent"
+    android:id="@+id/mcod_layout">
     <android.support.design.widget.AppBarLayout
     android:id="@+id/appbar"
     android:layout_width="match_parent"
-    android:layout_height="256dp"
+    android:layout_height="200dp"
     android:fitsSystemWindows="true"
+
     >
 
     <android.support.design.widget.CollapsingToolbarLayout
@@ -53,7 +38,7 @@
     <android.support.v7.widget.Toolbar
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="50dp"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:layout_collapseMode="pin" />
 
@@ -61,14 +46,13 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <ScrollView
         android:id="@+id/deep_scrollview"
         android:layout_width="match_parent"
         android:background="#FF00FF00"
         android:layout_height="match_parent"
 
         >
-        <!--  app:layout_behavior="com.superrecyclerview.mlfmbc.superrecyclerview.MdScrollBehavior"-->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,13 +65,62 @@
 
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
+    </ScrollView>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/cs_rv"
+
+
+        <customheaderandfooter.DampingLyout
+            android:id="@+id/dl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            >
+        <customheaderandfooter.CustomRecyclerView
+            android:id="@+id/cs_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/left_rv"
+            />
+            <customheaderandfooter.CustomRecyclerView
+                android:id="@+id/left_rv"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimaryDark"
+                />
+        </customheaderandfooter.DampingLyout>
+
+    <TextView
+        android:id="@+id/head"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
+        android:layout_height="200dp"
+        android:textSize="20sp"
+        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n1\n"/>
+    <LinearLayout
+        android:id="@+id/top_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorAccent"
+            android:text="我是Title"/>
+    </LinearLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+    <TextView
+        android:id="@+id/num"
+        android:layout_marginTop="200dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="我是第几条"
+        android:layout_marginLeft="80dp"
+        />
+    <View
+        android:id="@+id/touch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</customheaderandfooter.CustomCoordinatorLayout1_0>

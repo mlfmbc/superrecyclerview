@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -31,10 +32,10 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
     private float totalDy = 0,lastDy=0;
     private Context context;
     private TextView num;
-    private CustomRecyclerView left_rv;
+    private RecyclerView left_rv;
     private boolean move = false;
-    private int mIndex = 0;
-
+    private int mIndex = -1;
+    private View head;
     public CustomCoordinatorLayout(Context context) {
         this(context, null);
     }
@@ -55,8 +56,8 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) RecyclerViewWithDamping.getLayoutManager();
                     if (move && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        LinearLayoutManager layoutManager = (LinearLayoutManager) RecyclerViewWithDamping.getLayoutManager();
                         move = false;
                         int n = mIndex - layoutManager.findFirstVisibleItemPosition();
                         if (0 <= n && n < RecyclerViewWithDamping.getChildCount()) {
@@ -67,6 +68,14 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
                             RecyclerViewWithDamping.smoothScrollBy(0, top);
                         }
                     }
+                    if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                        if(mIndex>-1){
+                            smoothMoveToPosition(mIndex);
+                            mIndex=-1;
+                        }
+
+                    }
+
                 }
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -92,7 +101,7 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
                         int itemHeight = firstVisiableChildView.getHeight();
                         totalDy=firstVisiableChildView.getTop();
                     }
-                    Log.e("totalDy",""+totalDy+"-->"+dy);
+//                    Log.e("totalDy",""+totalDy+"-->"+dy);
                     if (!recyclerView.canScrollVertically(-1)) {
                         onScrolledToTop();
                     } else if (!recyclerView.canScrollVertically(1)) {
@@ -109,7 +118,17 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
         top_title = findViewById(R.id.top_title);
         deep_scrollview = (NestedScrollView) findViewById(R.id.deep_scrollview);
         num = (TextView) findViewById(R.id.num);
-        left_rv = (CustomRecyclerView) findViewById(R.id.left_rv);
+        left_rv = (RecyclerView) findViewById(R.id.left_rv);
+        head=findViewById(R.id.head);
+//        left_rv.setOnTouchListener(new OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if(isSelf){
+//                    return v.onTouchEvent(event);
+//                }
+//                return false;
+//            }
+//        });
     }
     public void scrollToPositionWithOffset(int i, int i1) {
         ((LinearLayoutManager) RecyclerViewWithDamping.getLayoutManager()).scrollToPositionWithOffset(i, i1);
@@ -163,11 +182,12 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
     }
 
     public void onScrolling() {
+
         LinearLayoutManager layoutManager = (LinearLayoutManager) RecyclerViewWithDamping.getLayoutManager();
         int position = layoutManager.findFirstVisibleItemPosition();
         View firstVisiableChildView = layoutManager.findViewByPosition(position);
         int itemHeight = firstVisiableChildView.getHeight();
-        if (itemHeight - Math.abs(firstVisiableChildView.getTop()) < DensityUtil.dip2px(context, 50)) {
+        if (itemHeight - Math.abs(firstVisiableChildView.getTop()) < DensityUtil.dip2px(context, 0)) {
             num.setText("我是第" + ((CommonAdapter) RecyclerViewWithDamping.getAdapter()).getmDatas().get(position).toString() + "条");
         } else {
             if (position != 0) {
@@ -187,6 +207,7 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
             top_title.setAlpha(1);
             num.setAlpha(1);
             left_rv.setTranslationY(0);
+            RecyclerViewWithDamping.setTranslationY(0);
             ((CoordinatorLayout.LayoutParams) left_rv.getLayoutParams()).setMargins(0, DensityUtil.dip2px(context, 50), 0, 0);
             requestLayout();
         } else {
@@ -194,11 +215,18 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
             num.setAlpha(0);
         }
         deep_scrollview.scrollTo(0, (int) (Math.abs(totalDy) / 3));
+        // 如果是head
+        if(position==0){
+            head.setTranslationY(-(int) (Math.abs(totalDy) ));
+        }else{
+            head.setTranslationY(-DensityUtil.dip2px(context, 150));
+        }
     }
 
     public void onScrolledToTop() {
         top_title.setAlpha(0);
         deep_scrollview.scrollTo(0, 0);
+        head.setTranslationY(0);
         ((CoordinatorLayout.LayoutParams) left_rv.getLayoutParams()).setMargins(0, DensityUtil.dip2px(context, 200), 0, 0);
         requestLayout();
     }
@@ -211,6 +239,10 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
         if(left_rv!=null){
             left_rv.setTranslationY(Distance);
         }
+        if(head!=null&&RecyclerViewWithDamping.canScrollVertically(1)){
+//            Log.e("Distance","="+Distance);
+            head.setTranslationY(Distance);
+        }
     }
 
     @Override
@@ -219,8 +251,9 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
     }
     private void Moving(){
         AnimatorSet AS = new AnimatorSet();
-        ObjectAnimator OA1 = ObjectAnimator.ofFloat(left_rv, View.TRANSLATION_Y, RecyclerViewWithDamping.getTranslationY(), RecyclerViewWithDamping.getHeight());
-        ObjectAnimator OA = ObjectAnimator.ofFloat(RecyclerViewWithDamping, View.TRANSLATION_Y, RecyclerViewWithDamping.getTranslationY(), RecyclerViewWithDamping.getHeight());
+        ObjectAnimator OA1 = ObjectAnimator.ofFloat(left_rv, View.TRANSLATION_Y, RecyclerViewWithDamping.getTranslationY(), RecyclerViewWithDamping.getHeight()+DensityUtil.dip2px(context, 50));
+        ObjectAnimator OA = ObjectAnimator.ofFloat(RecyclerViewWithDamping, View.TRANSLATION_Y, RecyclerViewWithDamping.getTranslationY(), RecyclerViewWithDamping.getHeight()+DensityUtil.dip2px(context, 50));
+        ObjectAnimator OA2 = ObjectAnimator.ofFloat(head, View.TRANSLATION_Y, RecyclerViewWithDamping.getTranslationY(), RecyclerViewWithDamping.getHeight()+DensityUtil.dip2px(context, 50));
         OA.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -249,20 +282,22 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
 
             }
         });
-        AS.play(OA).with(OA1);
+        AS.play(OA).with(OA1).with(OA2);
         AS.setDuration(500);
         AS.start();
     }
     private void reset() {
         RecyclerViewWithDamping.setVisibility(VISIBLE);
         AnimatorSet AS = new AnimatorSet();
-        ObjectAnimator OA1 = ObjectAnimator.ofFloat(left_rv, View.TRANSLATION_Y, RecyclerViewWithDamping.getHeight(), 0);
-        ObjectAnimator OA = ObjectAnimator.ofFloat(RecyclerViewWithDamping, View.TRANSLATION_Y, RecyclerViewWithDamping.getHeight(), 0);
-        AS.play(OA).with(OA1);
+        ObjectAnimator OA1 = ObjectAnimator.ofFloat(left_rv, View.TRANSLATION_Y, RecyclerViewWithDamping.getTranslationY(), 0);
+        ObjectAnimator OA = ObjectAnimator.ofFloat(RecyclerViewWithDamping, View.TRANSLATION_Y, RecyclerViewWithDamping.getTranslationY(), 0);
+        ObjectAnimator OA2 = ObjectAnimator.ofFloat(head, View.TRANSLATION_Y, RecyclerViewWithDamping.getTranslationY(), 0);
+
+        AS.play(OA).with(OA1).with(OA2);
         OA.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                float ii = (RecyclerViewWithDamping.getTranslationY()) / RecyclerViewWithDamping.getHeight();
+                float ii = (RecyclerViewWithDamping.getTranslationY()) / (RecyclerViewWithDamping.getHeight()+DensityUtil.dip2px(context, 50));
                 deep_scrollview.scrollTo(0, (int) (deep_scrollview.getScrollY() * ii));
             }
         });
@@ -275,11 +310,13 @@ public class CustomCoordinatorLayout extends CoordinatorLayout implements custom
             @Override
             public void onAnimationEnd(Animator animation) {
                 deep_scrollview.scrollTo(0, 0);
+         ;
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 deep_scrollview.scrollTo(0, 0);
+
             }
 
             @Override
