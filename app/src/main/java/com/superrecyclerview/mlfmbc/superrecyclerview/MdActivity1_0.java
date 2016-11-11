@@ -1,11 +1,17 @@
 package com.superrecyclerview.mlfmbc.superrecyclerview;
 
+import android.app.Activity;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -25,10 +31,21 @@ public class MdActivity1_0 extends AppCompatActivity implements ConvertHeader {
     private CommonAdapter mCommonAdapter, left_Adapter;
     private RecyclerView left_rv;
     CustomCoordinatorLayout1_0 mCustomCoordinatorLayout;
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_md_1_0);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//            toolbar.setFitsSystemWindows(true);
+//        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//        }
+        setTranslucent(this);
         mCustomRecyclerView = (RecyclerView) findViewById(R.id.cs_rv);
         mCustomRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager
                 .VERTICAL, false));
@@ -57,7 +74,24 @@ public class MdActivity1_0 extends AppCompatActivity implements ConvertHeader {
         mCommonAdapter.addDatas(data);
         initMd();
     }
-
+    public static void setTranslucent(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+            ViewGroup parent = (ViewGroup) activity.findViewById(android.R.id.content);
+            for (int i = 0, count = parent.getChildCount(); i < count; i++) {
+                View childView = parent.getChildAt(i);
+                if (childView instanceof ViewGroup) {
+                    childView.setFitsSystemWindows(true);
+                    ((ViewGroup)childView).setClipToPadding(true);
+                }
+            }
+        } else {
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+    }
     private void initMd() {
         mCustomCoordinatorLayout = (CustomCoordinatorLayout1_0) findViewById(R.id.mcod_layout);
         left_rv = (RecyclerView) findViewById(R.id.left_rv);

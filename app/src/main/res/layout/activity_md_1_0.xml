@@ -7,13 +7,19 @@
     android:fitsSystemWindows="true"
     tools:context="com.superrecyclerview.mlfmbc.superrecyclerview.MdActivity"
     android:background="@color/colorAccent"
-    android:id="@+id/mcod_layout">
+    android:id="@+id/mcod_layout"
+    app:HeadLayoutId="@layout/head_layout"
+    app:LabelNumId="@layout/label_num"
+    app:TopLayoutId="@layout/top_layout"
+    app:TopRightId="@layout/top_right"
+
+    >
     <android.support.design.widget.AppBarLayout
     android:id="@+id/appbar"
     android:layout_width="match_parent"
     android:layout_height="200dp"
     android:fitsSystemWindows="true"
-
+        app:layout_behavior="com.superrecyclerview.mlfmbc.superrecyclerview.AppBarBehavior"
     >
 
     <android.support.design.widget.CollapsingToolbarLayout
@@ -89,36 +95,6 @@
                 android:background="@color/colorPrimaryDark"
                 />
         </customheaderandfooter.DampingLyout>
-
-    <TextView
-        android:id="@+id/head"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:textSize="20sp"
-        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n1\n"/>
-    <LinearLayout
-        android:id="@+id/top_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:alpha="0"
-        android:orientation="vertical"
-        >
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/colorAccent"
-            android:text="我是Title"/>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/num"
-        android:layout_marginTop="200dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimaryDark"
-        android:text="我是第几条"
-        android:layout_marginLeft="80dp"
-        />
     <View
         android:id="@+id/touch"
         android:layout_width="match_parent"
