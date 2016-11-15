@@ -1,6 +1,7 @@
 package com.superrecyclerview.mlfmbc.superrecyclerview;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,11 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import customheaderandfooter.CustomCoordinatorLayout;
@@ -79,7 +83,10 @@ public class MdActivity1_0 extends AppCompatActivity implements ConvertHeader {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+//            }
+
             ViewGroup parent = (ViewGroup) activity.findViewById(android.R.id.content);
             for (int i = 0, count = parent.getChildCount(); i < count; i++) {
                 View childView = parent.getChildAt(i);
@@ -88,6 +95,8 @@ public class MdActivity1_0 extends AppCompatActivity implements ConvertHeader {
                     ((ViewGroup)childView).setClipToPadding(true);
                 }
             }
+
+
         } else {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }

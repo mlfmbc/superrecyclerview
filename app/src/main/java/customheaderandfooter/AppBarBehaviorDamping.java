@@ -5,4 +5,8 @@ package customheaderandfooter;
  */
 public interface AppBarBehaviorDamping {
     void AppBarBehaviorDamping(int dy);
+
+    void AppBarBehaviorMoving();
+
+    void AppBarBehaviorReset();
 }

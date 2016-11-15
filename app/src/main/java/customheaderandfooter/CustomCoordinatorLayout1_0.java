@@ -7,6 +7,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -15,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
@@ -23,6 +25,8 @@ import android.widget.TextView;
 import com.superrecyclerview.mlfmbc.superrecyclerview.AppBarBehavior;
 import com.superrecyclerview.mlfmbc.superrecyclerview.DensityUtil;
 import com.superrecyclerview.mlfmbc.superrecyclerview.R;
+
+import java.lang.reflect.Field;
 
 import customheaderandfooter.adapter.CommonAdapter;
 
@@ -76,7 +80,7 @@ public class CustomCoordinatorLayout1_0 extends CoordinatorLayout implements Dam
     }
 
     private void initView() {
-        touch=findViewById(R.id.touch);
+        touch=new View(getContext());
 //        top_title = findViewById(R.id.top_title);
         deep_scrollview = (ScrollView) findViewById(R.id.deep_scrollview);
 //        num = (TextView) findViewById(R.id.num);
@@ -86,16 +90,20 @@ public class CustomCoordinatorLayout1_0 extends CoordinatorLayout implements Dam
 //        LayoutParams a= getResolvedLayoutParams(appbar);
         LayoutParams app= (LayoutParams) appbar.getLayoutParams();
         AppBarBehavior AppBarBehavior= (AppBarBehavior) app.getBehavior();
-        AppBarBehavior.setAppBarBehaviorDamping(this);
+        if(AppBarBehavior!=null){
+            AppBarBehavior.setAppBarBehaviorDamping(this);
+        }
         dl= (DampingLyout) findViewById(R.id.dl);
         dl.setmDamping(this);
         appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
                 Log.e("verticalOffset","-"+verticalOffset);
+//                xx((Activity) context);
                 if(appbar.getVisibility()!=VISIBLE||!isShowed)return;
                 OffsetChanged(verticalOffset, appbar);
                 dl.setTranslationY(0);
+
             }
         });
 
@@ -138,6 +146,13 @@ public class CustomCoordinatorLayout1_0 extends CoordinatorLayout implements Dam
                     onScrolling();
                 }
             });
+        }
+    }
+    private void xx(Activity activity){
+        if (getStatusBarHeight(activity) >= 0) {
+            View scrollerLayout = activity.findViewById(R.id.toolbar);
+            scrollerLayout.getLayoutParams().height=getStatusBarHeight(activity)+DensityUtil.dip2px(activity,50);
+            setPadding(0, 0, 0, 0);
         }
     }
     private void OffsetChanged(int verticalOffset,AppBarLayout appBarLayout){
@@ -195,13 +210,24 @@ public class CustomCoordinatorLayout1_0 extends CoordinatorLayout implements Dam
         addView(TopLayout,TopLayoutLp);
         CoordinatorLayout.LayoutParams TopRightLp=new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(context, 200));
         LabelNumLp.topMargin=DensityUtil.dip2px(context, 200);
-        addView(TopRight,TopRightLp);
+        addView(TopRight, TopRightLp);
         CoordinatorLayout.LayoutParams HeadLayoutLp=new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        addView(HeadLayout,HeadLayoutLp);
-
+        addView(HeadLayout, HeadLayoutLp);
+        CoordinatorLayout.LayoutParams touchLp=new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        addView(touch, touchLp);
 
     }
 
+//    @Override
+//    public boolean onInterceptTouchEvent(MotionEvent ev) {
+//        return super.onInterceptTouchEvent(ev);
+//    }
+//
+//    @Override
+//    public boolean onTouchEvent(MotionEvent ev) {
+//        if(touch.isClickable())return true;
+//        return super.onTouchEvent(ev);
+//    }
 
     @Override
     public void DampingEnd() {
@@ -211,6 +237,7 @@ public class CustomCoordinatorLayout1_0 extends CoordinatorLayout implements Dam
     @Override
     public void DampingMoving() {
         touch.setClickable(true);
+        setTag(1);
         AnimatorSet AS = new AnimatorSet();
 
         ObjectAnimator OA = ObjectAnimator.ofFloat(dl, View.TRANSLATION_Y, dl.getTranslationY(), dl.getHeight());
@@ -263,6 +290,7 @@ public class CustomCoordinatorLayout1_0 extends CoordinatorLayout implements Dam
     public void DampingReset() {
         dl.setEnabled(false);
         touch.setClickable(true);
+        setTag(1);
         AnimatorSet AS = new AnimatorSet();
         ObjectAnimator OA = ObjectAnimator.ofFloat(dl, View.TRANSLATION_Y, dl.getTranslationY(), 0);
         ObjectAnimator OA1 = ObjectAnimator.ofFloat(TopLayout, View.TRANSLATION_Y, dl.getTranslationY(), 0);
@@ -288,17 +316,19 @@ public class CustomCoordinatorLayout1_0 extends CoordinatorLayout implements Dam
             @Override
             public void onAnimationEnd(Animator animation) {
                 deep_scrollview.scrollTo(0, 0);
-                isShowed=true;
+                isShowed = true;
                 dl.setEnabled(true);
                 touch.setClickable(false);
+                setTag(0);
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 deep_scrollview.scrollTo(0, 0);
-                isShowed=true;
+                isShowed = true;
                 dl.setEnabled(true);
                 touch.setClickable(false);
+                setTag(0);
             }
 
             @Override
@@ -320,6 +350,37 @@ public class CustomCoordinatorLayout1_0 extends CoordinatorLayout implements Dam
 
     @Override
     public void AppBarBehaviorDamping(int dy) {
-        dl.setTranslationY(dy);
+        TopLayout.setTranslationY(dy/3);
+        LabelNum.setTranslationY(dy/3);
+        dl.setTranslationY(dy/3);
+
+    }
+
+    @Override
+    public void AppBarBehaviorMoving() {
+        Log.e("AppBarBehaviorMoving", "AppBarBehaviorMoving");
+        DampingMoving();
+    }
+
+    @Override
+    public void AppBarBehaviorReset() {
+        Log.e("AppBarBehaviorReset","AppBarBehaviorReset");
+        DampingReset();
+    }
+    public static int getStatusBarHeight(Context context) {
+        Class<?> c = null;
+        Object obj = null;
+        Field field = null;
+        int x = 0, statusBarHeight = 0;
+        try {
+            c = Class.forName("com.android.internal.R$dimen");
+            obj = c.newInstance();
+            field = c.getField("status_bar_height");
+            x = Integer.parseInt(field.get(obj).toString());
+            statusBarHeight = context.getResources().getDimensionPixelSize(x);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        return statusBarHeight;
     }
 }
